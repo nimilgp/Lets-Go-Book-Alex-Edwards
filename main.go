@@ -7,10 +7,6 @@ import (
 
 //handler definitions
 func home(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/" {
-				http.NotFound(w,r)
-				return
-		}
 		w.Write([]byte("Hello from snippet-box!!!"))
 }
 
@@ -28,7 +24,7 @@ func main() {
 		mux := http.NewServeMux()
 
 		//register url patterns with handlers
-		mux.HandleFunc("/", home)
+		mux.HandleFunc("/{$}", home)
 		mux.HandleFunc("/snippet/view", snippetView)
 		mux.HandleFunc("/snippet/create", snippetCreate)
 
