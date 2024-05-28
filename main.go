@@ -1,22 +1,34 @@
 package main
 
 import (
+		"fmt"
 		"log"
 		"net/http"
+		"strconv"
 )
 
 //handler definitions
-func home(w http.ResponseWriter, r *http.Request) {
+func getHome(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello from snippet-box!!!"))
 }
 
 
-func snippetView(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("View snippet"))
+func getSnippetView(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(r.PathValue("id"))
+		if err != nil || id<1 {
+				http.NotFound(w,r)
+				return
+		}
+		msg := fmt.Sprintf("Display snippet no: %d", id)
+		w.Write([]byte(msg))
 }
 
-func snippetCreate(w http.ResponseWriter, r *http.Request) {
+func getSnippetCreate(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Create snippet"))
+}
+
+func postSnippetCreate(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("POST part of create snippet"))
 }
 
 func main() {
@@ -24,9 +36,11 @@ func main() {
 		mux := http.NewServeMux()
 
 		//register url patterns with handlers
-		mux.HandleFunc("/{$}", home)
-		mux.HandleFunc("/snippet/view", snippetView)
-		mux.HandleFunc("/snippet/create", snippetCreate)
+		mux.HandleFunc("GET /{$}", getHome)
+		mux.HandleFunc("GET /snippet/view/{id}", getSnippetView)
+		mux.HandleFunc("GET /snippet/create", getSnippetCreate)
+
+		mux.HandleFunc("POST /snippet/create", postSnippetCreate)
 
 		log.Println("Server is up!")
 		//start a new web server at a port, handled by a serveMux
