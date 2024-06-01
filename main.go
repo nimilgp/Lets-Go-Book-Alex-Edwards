@@ -9,6 +9,10 @@ import (
 
 //handler definitions
 func getHome(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Server", "net/http Golang") //for adding additional header details
+		w.Header().Add("Author", "nimilgp") 
+		w.Header().Add("Program", "Snippet-Box") 
+		w.Header().Add("Field-Name", "Can't have spaces in them") 
 		w.Write([]byte("Hello from snippet-box!!!"))
 }
 
@@ -28,6 +32,7 @@ func getSnippetCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func postSnippetCreate(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusCreated) //201 created status code
 		w.Write([]byte("POST part of create snippet"))
 }
 
@@ -39,7 +44,6 @@ func main() {
 		mux.HandleFunc("GET /{$}", getHome)
 		mux.HandleFunc("GET /snippet/view/{id}", getSnippetView)
 		mux.HandleFunc("GET /snippet/create", getSnippetCreate)
-
 		mux.HandleFunc("POST /snippet/create", postSnippetCreate)
 
 		log.Println("Server is up!")
