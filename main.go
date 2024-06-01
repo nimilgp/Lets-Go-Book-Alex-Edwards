@@ -13,7 +13,7 @@ func getHome(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Author", "nimilgp") 
 		w.Header().Add("Program", "Snippet-Box") 
 		w.Header().Add("Field-Name", "Can't have spaces in them") 
-		w.Write([]byte("Hello from snippet-box!!!"))
+		fmt.Fprintf(w, "Hello from snippet-box!!!")
 }
 
 
@@ -23,17 +23,16 @@ func getSnippetView(w http.ResponseWriter, r *http.Request) {
 				http.NotFound(w,r)
 				return
 		}
-		msg := fmt.Sprintf("Display snippet no: %d", id)
-		w.Write([]byte(msg))
+		fmt.Fprintf(w, "Display Snippet no: %d", id)
 }
 
 func getSnippetCreate(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Create snippet"))
+		fmt.Fprintf(w, "Create snippet")
 }
 
 func postSnippetCreate(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated) //201 created status code
-		w.Write([]byte("POST part of create snippet"))
+		fmt.Fprintf(w, "POST part of create snippet")
 }
 
 func main() {
