@@ -4,6 +4,8 @@ import (
 		"fmt"
 		"net/http"
 		"strconv"
+		"html/template"
+		"log"
 )
 
 //handler definitions
@@ -11,8 +13,20 @@ func getHome(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Server", "net/http Golang") //for adding additional header details
 		w.Header().Add("Author", "nimilgp") 
 		w.Header().Add("Program", "Snippet-Box") 
-		w.Header().Add("Field-Name", "Can't have spaces in them") 
-		fmt.Fprintf(w, "Hello from snippet-box!!!")
+		w.Header().Add("Field-Name", "Can't have spaces in them")
+
+		ts, err := template.ParseFiles("./ui/html/pages/home.tmpl.html")
+		if err != nil {
+				log.Print(err.Error()) //log err on server system
+				http.Error(w, "Internal Server ERROR(ParseFiles)", http.StatusInternalServerError) //notify user of err
+				return
+		}
+
+		err = ts.Execute(w, nil)//write template set to w response body, dynamic data -> nil
+		if err != nil {
+				log.Print(err.Error())
+				http.Error(w, "Internal Server ERROR(Execute)", http.StatusInternalServerError)
+		}
 }
 
 
