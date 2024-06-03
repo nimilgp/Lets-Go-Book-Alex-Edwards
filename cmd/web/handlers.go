@@ -20,6 +20,7 @@ func getHome(w http.ResponseWriter, r *http.Request) {
 		files := []string{
 				"./ui/html/base.tmpl.html",
 				"./ui/html/pages/home.tmpl.html",
+				"./ui/html/partials/nav.tmpl.html",
 		}
 
 		ts, err := template.ParseFiles(files...)//pass contents of file as variadic args
