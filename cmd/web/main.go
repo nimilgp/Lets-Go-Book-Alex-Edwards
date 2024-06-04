@@ -6,15 +6,23 @@ import (
 		"net/http"
 )
 
+type config struct {
+		port string
+		staticDir string
+}
+
 func main() {
-		portptr := flag.String("port", ":3333", "HTTP port address")//flag, default val, helper
+		var cfg config
+
+		flag.StringVar(&cfg.port, "port", ":3333", "HTTP port address")//flag, default val, helper
+		flag.StringVar(&cfg.staticDir, "static-dir", "./ui/static", "Path to static assets")
 		flag.Parse()//call this before use of the flag variables else will stay at default
 
 		//create a new serveMux
 		mux := http.NewServeMux()
 
 		//create file server
-		fileServer := http.FileServer(http.Dir("./ui/static/"))
+		fileServer := http.FileServer(http.Dir(cfg.staticDir))
 		
 		//register mux.Handle func to register yje file server asd the handler for url path /static
 		mux.Handle("GET /static/", http.StripPrefix("/static", fileServer))
@@ -25,9 +33,10 @@ func main() {
 		mux.HandleFunc("GET /snippet/create", getSnippetCreate)
 		mux.HandleFunc("POST /snippet/create", postSnippetCreate)
 
-		log.Println("Server Port given is ", *portptr)
+		log.Println("Server Port given is ", cfg.port)
+		log.Println("Static directory given is ", cfg.staticDir)
 		
 		//start a new web server at a port, handled by a serveMux
-		err := http.ListenAndServe(*portptr, mux)
+		err := http.ListenAndServe(cfg.port, mux)
 		log.Fatal(err)
 }
