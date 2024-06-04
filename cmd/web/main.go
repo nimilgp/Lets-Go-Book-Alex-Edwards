@@ -4,6 +4,7 @@ import (
 		"flag"
 		"log"
 		"net/http"
+		"os"
 )
 
 type config struct {
@@ -18,6 +19,8 @@ func main() {
 		flag.StringVar(&cfg.staticDir, "static-dir", "./ui/static", "Path to static assets")
 		flag.Parse()//call this before use of the flag variables else will stay at default
 
+		infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+		errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Llongfile)
 		//create a new serveMux
 		mux := http.NewServeMux()
 
@@ -33,10 +36,17 @@ func main() {
 		mux.HandleFunc("GET /snippet/create", getSnippetCreate)
 		mux.HandleFunc("POST /snippet/create", postSnippetCreate)
 
-		log.Println("Server Port given is ", cfg.port)
-		log.Println("Static directory given is ", cfg.staticDir)
+		infoLog.Println("Server Port given is ", cfg.port)
+		infoLog.Println("Static directory given is ", cfg.staticDir)
 		
+		//create custom http.server
+		srv := &http.Server {
+				Addr: cfg.port,
+				Handler: mux,
+				ErrorLog: errorLog,
+		}
+
 		//start a new web server at a port, handled by a serveMux
-		err := http.ListenAndServe(cfg.port, mux)
-		log.Fatal(err)
+		err := srv.ListenAndServe()
+		errorLog.Fatal(err)
 }
