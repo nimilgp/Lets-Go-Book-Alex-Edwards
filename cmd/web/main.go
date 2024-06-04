@@ -1,12 +1,14 @@
 package main
 
 import (
+		"flag"
 		"log"
 		"net/http"
 )
 
 func main() {
-		port := ":3333"
+		portptr := flag.String("port", ":3333", "HTTP port address")//flag, default val, helper
+		flag.Parse()//call this before use of the flag variables else will stay at default
 
 		//create a new serveMux
 		mux := http.NewServeMux()
@@ -23,9 +25,9 @@ func main() {
 		mux.HandleFunc("GET /snippet/create", getSnippetCreate)
 		mux.HandleFunc("POST /snippet/create", postSnippetCreate)
 
-		log.Println("Server is up on port ",port)
+		log.Println("Server Port given is ", *portptr)
 		
 		//start a new web server at a port, handled by a serveMux
-		err := http.ListenAndServe(port, mux)
+		err := http.ListenAndServe(*portptr, mux)
 		log.Fatal(err)
 }
