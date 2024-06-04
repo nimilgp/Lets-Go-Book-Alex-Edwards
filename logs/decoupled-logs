@@ -1,1 +1,0 @@
- go run ./cmd/web/ >> ./logs/info.log  2>>./logs/error.log
