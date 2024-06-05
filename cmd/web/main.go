@@ -36,21 +36,6 @@ func main() {
 				infoLog: infoLog,
 		}
 
-		//create a new serveMux
-		mux := http.NewServeMux()
-
-		//create file server
-		fileServer := http.FileServer(http.Dir(cfg.staticDir))
-		
-		//register mux.Handle func to register yje file server asd the handler for url path /static
-		mux.Handle("GET /static/", http.StripPrefix("/static", fileServer))
-
-		//register url patterns with handlers
-		mux.HandleFunc("GET /{$}", app.getHome)
-		mux.HandleFunc("GET /snippet/view/{id}", app.getSnippetView)
-		mux.HandleFunc("GET /snippet/create", app.getSnippetCreate)
-		mux.HandleFunc("POST /snippet/create", app.postSnippetCreate)
-
 		infoLog.Println("Server Port given is ", cfg.port)
 		infoLog.Println("Static directory given is ", cfg.staticDir)
 		infoLog.Println("Logs directory given is ", cfg.logsDir)
@@ -58,7 +43,7 @@ func main() {
 		//create custom http.server
 		srv := &http.Server {
 				Addr: cfg.port,
-				Handler: mux,
+				Handler: app.routes(cfg.staticDir),
 				ErrorLog: errorLog,
 		}
 
