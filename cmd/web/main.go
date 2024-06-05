@@ -20,24 +20,8 @@ func main() {
 		flag.StringVar(&cfg.staticDir, "static-dir", "./ui/static", "Path to static assets")
 		flag.StringVar(&cfg.logsDir, "logs-dir", "./", "Path where to log info and error")
 		flag.Parse()//call this before use of the flag variables else will stay at default
-		/*	
-		//open log files
-		f1, err1 := os.OpenFile(cfg.logsDir+"info.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-		if err1 != nil {
-				log.Fatal(err1)
-		}
-		defer f1.Close()
-		f1.Write([]byte("#####################\nINFO LOGGING STARTED\n"))
 
-		f2, err2 := os.OpenFile(cfg.logsDir+"error.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-		if err2 != nil {
-				log.Fatal(err2)
-		}
-		defer f2.Close()
-		f2.Write([]byte("#####################\nERROR LOGGING STARTED\n"))
-		*/
-
-		f1, f2 := logFileHandle.writeLogFiles(cfg.logsDir)
+		f1, f2 := logFileHandle.WriteLogFiles(cfg.logsDir)
 
 		infoLog := log.New(f1, "INFO\t", log.Ldate|log.Ltime)
 		errorLog := log.New(f2, "ERROR\t", log.Ldate|log.Ltime|log.Llongfile)
