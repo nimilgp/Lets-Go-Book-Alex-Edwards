@@ -4,7 +4,6 @@ import (
 		"flag"
 		"log"
 		"net/http"
-		//"os"
 		"github.com/nimilgp/snippet-box/logFileHandle"
 )
 
@@ -12,6 +11,11 @@ type config struct {
 		port string
 		staticDir string
 		logsDir string
+}
+
+type application struct {
+		errorLog *log.Logger
+		infoLog *log.Logger
 }
 
 func main() {
@@ -26,6 +30,12 @@ func main() {
 		infoLog := log.New(f1, "INFO\t", log.Ldate|log.Ltime)
 		errorLog := log.New(f2, "ERROR\t", log.Ldate|log.Ltime|log.Llongfile)
 		
+		//create instance of application
+		app := &application{
+				errorLog: errorLog,
+				infoLog: infoLog,
+		}
+
 		//create a new serveMux
 		mux := http.NewServeMux()
 
@@ -36,10 +46,10 @@ func main() {
 		mux.Handle("GET /static/", http.StripPrefix("/static", fileServer))
 
 		//register url patterns with handlers
-		mux.HandleFunc("GET /{$}", getHome)
-		mux.HandleFunc("GET /snippet/view/{id}", getSnippetView)
-		mux.HandleFunc("GET /snippet/create", getSnippetCreate)
-		mux.HandleFunc("POST /snippet/create", postSnippetCreate)
+		mux.HandleFunc("GET /{$}", app.getHome)
+		mux.HandleFunc("GET /snippet/view/{id}", app.getSnippetView)
+		mux.HandleFunc("GET /snippet/create", app.getSnippetCreate)
+		mux.HandleFunc("POST /snippet/create", app.postSnippetCreate)
 
 		infoLog.Println("Server Port given is ", cfg.port)
 		infoLog.Println("Static directory given is ", cfg.staticDir)

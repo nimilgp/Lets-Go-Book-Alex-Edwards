@@ -5,11 +5,10 @@ import (
 		"net/http"
 		"strconv"
 		"html/template"
-		"log"
 )
 
 //handler definitions
-func getHome(w http.ResponseWriter, r *http.Request) {
+func (app *application) getHome(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Server", "net/http Golang") //for adding additional header details
 		w.Header().Add("Author", "nimilgp") 
 		w.Header().Add("Program", "Snippet-Box") 
@@ -25,20 +24,20 @@ func getHome(w http.ResponseWriter, r *http.Request) {
 
 		ts, err := template.ParseFiles(files...)//pass contents of file as variadic args
 		if err != nil {
-				log.Print(err.Error()) //log err on server system
+				app.errorLog.Println(err.Error())
 				http.Error(w, "Internal Server ERROR(ParseFiles)", http.StatusInternalServerError) //notify user of err
 				return
 		}
 
 		err = ts.ExecuteTemplate(w, "base", nil)//specifically tells to respond with content 'base', dynamic data -> nil
 		if err != nil {
-				log.Print(err.Error())
+				app.errorLog.Println(err.Error())
 				http.Error(w, "Internal Server ERROR(Execute)", http.StatusInternalServerError)
 		}
 }
 
 
-func getSnippetView(w http.ResponseWriter, r *http.Request) {
+func (app *application) getSnippetView(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(r.PathValue("id"))
 		if err != nil || id<1 {
 				http.NotFound(w,r)
@@ -47,11 +46,11 @@ func getSnippetView(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Display Snippet no: %d", id)
 }
 
-func getSnippetCreate(w http.ResponseWriter, r *http.Request) {
+func (app *application) getSnippetCreate(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Create snippet")
 }
 
-func postSnippetCreate(w http.ResponseWriter, r *http.Request) {
+func (app *application) postSnippetCreate(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated) //201 created status code
 		fmt.Fprintf(w, "POST part of create snippet")
 }
