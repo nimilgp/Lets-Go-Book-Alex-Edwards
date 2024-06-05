@@ -53,6 +53,7 @@ func main() {
 
 		infoLog.Println("Server Port given is ", cfg.port)
 		infoLog.Println("Static directory given is ", cfg.staticDir)
+		infoLog.Println("Logs directory given is ", cfg.logsDir)
 		
 		//create custom http.server
 		srv := &http.Server {
