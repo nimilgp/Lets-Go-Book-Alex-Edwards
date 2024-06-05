@@ -24,15 +24,14 @@ func (app *application) getHome(w http.ResponseWriter, r *http.Request) {
 
 		ts, err := template.ParseFiles(files...)//pass contents of file as variadic args
 		if err != nil {
-				app.errorLog.Println(err.Error())
-				http.Error(w, "Internal Server ERROR(ParseFiles)", http.StatusInternalServerError) //notify user of err
+				app.serverError(w, err)
 				return
 		}
 
 		err = ts.ExecuteTemplate(w, "base", nil)//specifically tells to respond with content 'base', dynamic data -> nil
 		if err != nil {
-				app.errorLog.Println(err.Error())
-				http.Error(w, "Internal Server ERROR(Execute)", http.StatusInternalServerError)
+				app.serverError(w, err)
+				return
 		}
 }
 
@@ -40,7 +39,7 @@ func (app *application) getHome(w http.ResponseWriter, r *http.Request) {
 func (app *application) getSnippetView(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(r.PathValue("id"))
 		if err != nil || id<1 {
-				http.NotFound(w,r)
+				app.notFound(w)
 				return
 		}
 		fmt.Fprintf(w, "Display Snippet no: %d", id)
