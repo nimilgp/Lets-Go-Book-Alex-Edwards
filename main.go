@@ -10,7 +10,7 @@ import (
 func getRoot(w http.ResponseWriter, r *http.Request) {
   w.Header().Add("Server", "Go")
   w.Header().Add("Application", "Snippet Box")
-  w.Write([]byte("<h1>Hello!, from the webserver</h1>"))
+  fmt.Fprintf(w, "<h1>Hello!, from the webserver</h1>")
 }
 
 func getSnippetView(w http.ResponseWriter, r *http.Request) {
@@ -20,17 +20,16 @@ func getSnippetView(w http.ResponseWriter, r *http.Request) {
     return
   } 
 
-  msg := fmt.Sprintf("<h1>View snippet number:%d</h1>", id)
-  w.Write([]byte(msg))
+  fmt.Fprintf(w, "<h1>View snippet number:%d</h1>", id)
 }
 
 func getSnippetCreate(w http.ResponseWriter, r *http.Request) {
-  w.Write([]byte("<h1>Display a form to create a snippet</h1>"))
+  fmt.Fprintf(w, "<h1>Display a form to create a snippet</h1>")
 }
 
 func postSnippetCreate(w http.ResponseWriter, r *http.Request) {
   w.WriteHeader(http.StatusCreated)
-  w.Write([]byte("<h1>Save a new snippet</h1>"))
+  fmt.Fprintf(w, "<h1>Save a new snippet</h1>")
 }
 
 func main(){
