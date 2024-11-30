@@ -8,6 +8,8 @@ import (
 )
 
 func getRoot(w http.ResponseWriter, r *http.Request) {
+  w.Header().Add("Server", "Go")
+  w.Header().Add("Application", "Snippet Box")
   w.Write([]byte("<h1>Hello!, from the webserver</h1>"))
 }
 
