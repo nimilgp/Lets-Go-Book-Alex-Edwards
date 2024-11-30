@@ -2,8 +2,9 @@ package main
 
 import (
 	"flag"
-	"log"
+	"log/slog"
 	"net/http"
+	"os"
 )
 
 type config struct {
@@ -11,11 +12,19 @@ type config struct {
 	staticDir string
 }
 
+type application struct {
+	logger *slog.Logger
+}
+
 func main() {
 	var cfg config
 	flag.StringVar(&cfg.addr, "addr", "3333", "HTTP network address")
 	flag.StringVar(&cfg.staticDir, "static-dir", "./ui/static/", "Path to static assets")
 	flag.Parse()
+
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		AddSource: true,
+	}))
 
 	mux := http.NewServeMux()
 	fileServer := http.FileServer(http.Dir(cfg.staticDir))
@@ -26,9 +35,10 @@ func main() {
 	mux.HandleFunc("GET /snippet/create", getSnippetCreate)
 	mux.HandleFunc("POST /snippet/create", postSnippetCreate)
 
-	log.Println("server running at port:", cfg.addr)
+	logger.Info("starting server at port:", "addr", cfg.addr)
 
 	if err := http.ListenAndServe(":"+cfg.addr, mux); err != nil {
-		log.Fatal(err)
+		logger.Error(err.Error())
+		os.Exit(-1)
 	}
 }
