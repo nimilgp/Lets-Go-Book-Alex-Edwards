@@ -25,18 +25,9 @@ func main() {
 	var app application
 	app.logger = slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	mux := http.NewServeMux()
-	fileServer := http.FileServer(http.Dir(cfg.staticDir))
-
-	mux.Handle("GET /static/", http.StripPrefix("/static/", fileServer))
-	mux.HandleFunc("GET /{$}", app.getRoot)
-	mux.HandleFunc("GET /snippet/view/{id}", app.getSnippetView)
-	mux.HandleFunc("GET /snippet/create", app.getSnippetCreate)
-	mux.HandleFunc("POST /snippet/create", app.postSnippetCreate)
-
 	app.logger.Info("starting server at port:", "addr", cfg.addr)
 
-	if err := http.ListenAndServe(":"+cfg.addr, mux); err != nil {
+	if err := http.ListenAndServe(":"+cfg.addr, app.route(cfg)); err != nil {
 		app.logger.Error(err.Error())
 		os.Exit(-1)
 	}
