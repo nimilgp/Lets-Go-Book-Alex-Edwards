@@ -15,6 +15,7 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 	files := []string{
 		"./ui/html/base.tmpl.html",
 		"./ui/html/pages/root.tmpl.html",
+		"./ui/html/partials/nav.tmpl.html",
 	}
 
 	ts, err := template.ParseFiles(files...)
