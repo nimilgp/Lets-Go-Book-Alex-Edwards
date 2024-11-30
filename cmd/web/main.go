@@ -22,23 +22,22 @@ func main() {
 	flag.StringVar(&cfg.staticDir, "static-dir", "./ui/static/", "Path to static assets")
 	flag.Parse()
 
-	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
-		AddSource: true,
-	}))
+	var app application
+	app.logger = slog.New(slog.NewTextHandler(os.Stdout, nil))
 
 	mux := http.NewServeMux()
 	fileServer := http.FileServer(http.Dir(cfg.staticDir))
 
 	mux.Handle("GET /static/", http.StripPrefix("/static/", fileServer))
-	mux.HandleFunc("GET /{$}", getRoot)
-	mux.HandleFunc("GET /snippet/view/{id}", getSnippetView)
-	mux.HandleFunc("GET /snippet/create", getSnippetCreate)
-	mux.HandleFunc("POST /snippet/create", postSnippetCreate)
+	mux.HandleFunc("GET /{$}", app.getRoot)
+	mux.HandleFunc("GET /snippet/view/{id}", app.getSnippetView)
+	mux.HandleFunc("GET /snippet/create", app.getSnippetCreate)
+	mux.HandleFunc("POST /snippet/create", app.postSnippetCreate)
 
-	logger.Info("starting server at port:", "addr", cfg.addr)
+	app.logger.Info("starting server at port:", "addr", cfg.addr)
 
 	if err := http.ListenAndServe(":"+cfg.addr, mux); err != nil {
-		logger.Error(err.Error())
+		app.logger.Error(err.Error())
 		os.Exit(-1)
 	}
 }
