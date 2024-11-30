@@ -8,7 +8,9 @@ import (
 func main() {
 	PORT := ":3333"
 	mux := http.NewServeMux()
+	fileServer := http.FileServer(http.Dir("./ui/static/"))
 
+	mux.Handle("GET /static/", http.StripPrefix("/static/", fileServer))
 	mux.HandleFunc("GET /{$}", getRoot)
 	mux.HandleFunc("GET /snippet/view/{id}", getSnippetView)
 	mux.HandleFunc("GET /snippet/create", getSnippetCreate)
