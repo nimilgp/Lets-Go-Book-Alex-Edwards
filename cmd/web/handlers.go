@@ -2,14 +2,28 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 )
 
 func getRoot(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Server", "Go")
-	w.Header().Add("Application", "Snippet Box")
-	fmt.Fprintf(w, "<h1>Hello!, from the webserver</h1>")
+	w.Header().Add("Application", "Paste Bin")
+
+	ts, err := template.ParseFiles("./ui/html/pages/root.tmpl.html")
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	err = ts.Execute(w, nil)
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
 }
 
 func getSnippetView(w http.ResponseWriter, r *http.Request) {
