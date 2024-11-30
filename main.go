@@ -7,11 +7,11 @@ import (
   "net/http"
 )
 
-func root(w http.ResponseWriter, r *http.Request) {
+func getRoot(w http.ResponseWriter, r *http.Request) {
   w.Write([]byte("<h1>Hello!, from the webserver</h1>"))
 }
 
-func snippetView(w http.ResponseWriter, r *http.Request) {
+func getSnippetView(w http.ResponseWriter, r *http.Request) {
   id, err := strconv.Atoi(r.PathValue("id"))
   if err != nil || id < 1 {
     http.NotFound(w,r)
@@ -22,20 +22,26 @@ func snippetView(w http.ResponseWriter, r *http.Request) {
   w.Write([]byte(msg))
 }
 
-func snippetCreate(w http.ResponseWriter, r *http.Request) {
-  w.Write([]byte("<h1>Create a snippet</h1>"))
+func getSnippetCreate(w http.ResponseWriter, r *http.Request) {
+  w.Write([]byte("<h1>Display a form to create a snippet</h1>"))
+}
+
+func postSnippetCreate(w http.ResponseWriter, r *http.Request) {
+  w.Write([]byte("<h1>Save a new snippet</h1>"))
 }
 
 func main(){
+  PORT := ":3333"
   mux := http.NewServeMux()
 
-  mux.HandleFunc("/{$}", root)
-  mux.HandleFunc("/snippet/view/{id}", snippetView)
-  mux.HandleFunc("/snippet/create", snippetCreate)
+  mux.HandleFunc("GET /{$}", getRoot)
+  mux.HandleFunc("GET /snippet/view/{id}", getSnippetView)
+  mux.HandleFunc("GET /snippet/create", getSnippetCreate)
+  mux.HandleFunc("POST /snippet/create", postSnippetCreate)
 
-  log.Println("Hello, world!")
+  log.Println("server running at port",PORT)
 
-  if err := http.ListenAndServe(":3333", mux); err != nil {
+  if err := http.ListenAndServe(PORT, mux); err != nil {
     log.Fatal(err)
   }
 }
