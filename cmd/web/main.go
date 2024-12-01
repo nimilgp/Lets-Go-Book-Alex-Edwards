@@ -8,6 +8,7 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/nimilgp/paste-bin/internal/models"
 )
 
 type config struct {
@@ -17,7 +18,8 @@ type config struct {
 }
 
 type application struct {
-	logger *slog.Logger
+	logger   *slog.Logger
+	snippets *models.SnipetModel
 }
 
 func main() {
@@ -27,18 +29,20 @@ func main() {
 	flag.StringVar(&cfg.dsn, "dsn", "web:super-secret-passwd@/snippetbox?parseTime=true", "MySQL data source name")
 	flag.Parse()
 
-	var app application
-	app.logger = slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
 	db, err := openDB(cfg.dsn)
 	if err != nil {
-		app.logger.Error(err.Error())
+		logger.Error(err.Error())
 		os.Exit(1)
 	}
 	defer db.Close()
 
-	app.logger.Info("starting server at port:", "addr", cfg.addr)
+	var app application
+	app.logger = logger
+	app.snippets = &models.SnipetModel{DB: db}
 
+	app.logger.Info("starting server at port:", "addr", cfg.addr)
 	if err := http.ListenAndServe(":"+cfg.addr, app.route(cfg)); err != nil {
 		app.logger.Error(err.Error())
 		os.Exit(-1)
