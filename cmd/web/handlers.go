@@ -44,6 +44,14 @@ func (app *application) getSnippetCreate(w http.ResponseWriter, r *http.Request)
 }
 
 func (app *application) postSnippetCreate(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusCreated)
-	fmt.Fprintf(w, "<h1>Save a new snippet</h1>")
+	title := "O snail"
+	content := "O snail\nClimb Mount Fuji,\nBut slowly, slowly!\n\n– Kobayashi Issa"
+	expires := 7
+
+	id, err := app.snippets.Insert(title, content, expires)
+	if err != nil {
+		app.serverError(w, r, err)
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
 }
