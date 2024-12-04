@@ -11,8 +11,6 @@ import (
 )
 
 func (app *application) getRoot(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Server", "Go")
-	w.Header().Add("Application", "Paste Bin")
 	snippets, err := app.snippets.Latest()
 	if err != nil {
 		app.serverError(w, r, err)
