@@ -46,9 +46,13 @@ func (app *application) getSnippetView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w, r, http.StatusOK, "view.tmpl.html", templateData{
-		Snippet: snippet,
-	})
+	flash := app.sessionManager.PopString(r.Context(), "flash")
+
+	data := templateData{}
+	data.Snippet = snippet
+	data.Flash = flash
+
+	app.render(w, r, http.StatusOK, "view.tmpl.html", data)
 }
 
 func (app *application) getSnippetCreate(w http.ResponseWriter, r *http.Request) {
@@ -94,6 +98,8 @@ func (app *application) postSnippetCreate(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		app.serverError(w, r, err)
 	}
+
+	app.sessionManager.Put(r.Context(), "flash", "Successfully saved!")
 
 	http.Redirect(w, r, fmt.Sprintf("/snippet/view/%d", id), http.StatusSeeOther)
 }

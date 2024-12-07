@@ -7,8 +7,12 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/alexedwards/scs/mysqlstore"
+	"github.com/alexedwards/scs/v2"
 	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/nimilgp/paste-bin/internal/models"
 )
 
@@ -19,9 +23,10 @@ type config struct {
 }
 
 type application struct {
-	logger        *slog.Logger
-	snippets      *models.SnipetModel
-	templateCache map[string]*template.Template
+	logger         *slog.Logger
+	snippets       *models.SnipetModel
+	templateCache  map[string]*template.Template
+	sessionManager *scs.SessionManager
 }
 
 func main() {
@@ -46,10 +51,15 @@ func main() {
 		os.Exit(-1)
 	}
 
+	sessionManager := scs.New()
+	sessionManager.Store = mysqlstore.New(db)
+	sessionManager.Lifetime = 12 * time.Hour
+
 	app := &application{
-		logger:        logger,
-		snippets:      &models.SnipetModel{DB: db},
-		templateCache: templateCache,
+		logger:         logger,
+		snippets:       &models.SnipetModel{DB: db},
+		templateCache:  templateCache,
+		sessionManager: sessionManager,
 	}
 
 	app.logger.Info("starting server at port:", "addr", cfg.addr)
