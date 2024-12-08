@@ -63,7 +63,14 @@ func main() {
 	}
 
 	app.logger.Info("starting server at port:", "addr", cfg.addr)
-	if err := http.ListenAndServe(":"+cfg.addr, app.route(cfg)); err != nil {
+
+	srv := &http.Server{
+		Addr:     ":" + cfg.addr,
+		Handler:  app.route(cfg),
+		ErrorLog: slog.NewLogLogger(logger.Handler(), slog.LevelError),
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
 		app.logger.Error(err.Error())
 		os.Exit(-1)
 	}
