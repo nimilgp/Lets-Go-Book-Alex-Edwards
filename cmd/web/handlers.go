@@ -24,9 +24,10 @@ func (app *application) getRoot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w, r, http.StatusOK, "root.tmpl.html", templateData{
-		Snippets: snippets,
-	})
+	data := app.newTemplateData(r)
+	data.Snippets = snippets
+
+	app.render(w, r, http.StatusOK, "root.tmpl.html", data)
 }
 
 func (app *application) getSnippetView(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +54,7 @@ func (app *application) getSnippetView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) getSnippetCreate(w http.ResponseWriter, r *http.Request) {
-	data := templateData{}
+	data := app.newTemplateData(r)
 	data.Form = snippetCreateForm{
 		Expires: 365,
 	}
@@ -85,7 +86,7 @@ func (app *application) postSnippetCreate(w http.ResponseWriter, r *http.Request
 	form.CheckField(validator.PermittedValue(form.Expires, 1, 7, 365), "expires", "This field must equal 1, 7 or 365")
 
 	if !form.Valid() {
-		data := templateData{}
+		data := app.newTemplateData(r)
 		data.Form = form
 		app.render(w, r, http.StatusUnprocessableEntity, "create.tmpl.html", data)
 		return
