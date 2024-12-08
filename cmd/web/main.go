@@ -71,10 +71,13 @@ func main() {
 	app.logger.Info("starting server at port:", "addr", cfg.addr)
 
 	srv := &http.Server{
-		Addr:      ":" + cfg.addr,
-		Handler:   app.route(cfg),
-		ErrorLog:  slog.NewLogLogger(logger.Handler(), slog.LevelError),
-		TLSConfig: tlsConfig,
+		Addr:         ":" + cfg.addr,
+		Handler:      app.route(cfg),
+		ErrorLog:     slog.NewLogLogger(logger.Handler(), slog.LevelError),
+		TLSConfig:    tlsConfig,
+		IdleTimeout:  time.Minute,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	}
 
 	if err := srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem"); err != nil {
