@@ -12,7 +12,7 @@ func (app *application) route(cfg config) http.Handler {
 	fileServer := http.FileServer(http.Dir(cfg.staticDir))
 	mux.Handle("GET /static/", http.StripPrefix("/static/", fileServer))
 
-	dynamic := alice.New(app.sessionManager.LoadAndSave)
+	dynamic := alice.New(app.sessionManager.LoadAndSave, app.authenticate)
 
 	mux.Handle("GET /{$}", dynamic.ThenFunc(app.getRoot))
 	mux.Handle("GET /snippet/view/{id}", dynamic.ThenFunc(app.getSnippetView))
