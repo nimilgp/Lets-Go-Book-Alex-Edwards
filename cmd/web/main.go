@@ -18,9 +18,9 @@ import (
 )
 
 type config struct {
-	addr      string
-	staticDir string
-	dsn       string
+	addr string
+	// staticDir string
+	dsn string
 }
 
 type application struct {
@@ -34,7 +34,7 @@ type application struct {
 func main() {
 	var cfg config
 	flag.StringVar(&cfg.addr, "addr", "3333", "HTTP network address")
-	flag.StringVar(&cfg.staticDir, "static-dir", "./ui/static/", "Path to static assets")
+	// flag.StringVar(&cfg.staticDir, "static-dir", "./ui/static/", "Path to static assets")
 	flag.StringVar(&cfg.dsn, "dsn", "web:super-secret-passwd@/snippetbox?parseTime=true", "MySQL data source name")
 	flag.Parse()
 
