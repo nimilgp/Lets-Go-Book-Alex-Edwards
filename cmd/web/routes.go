@@ -7,7 +7,7 @@ import (
 	"github.com/nimilgp/paste-bin/ui"
 )
 
-func (app *application) route(cfg config) http.Handler {
+func (app *application) route() http.Handler {
 	mux := http.NewServeMux()
 
 	mux.Handle("GET /static/", http.FileServerFS(ui.Files))

@@ -18,9 +18,9 @@ import (
 )
 
 type config struct {
-	addr string
-	// staticDir string
-	dsn string
+	addr    string
+	tlsPath string
+	dsn     string
 }
 
 type application struct {
@@ -34,7 +34,7 @@ type application struct {
 func main() {
 	var cfg config
 	flag.StringVar(&cfg.addr, "addr", "3333", "HTTP network address")
-	// flag.StringVar(&cfg.staticDir, "static-dir", "./ui/static/", "Path to static assets")
+	flag.StringVar(&cfg.tlsPath, "tls-path", "./tls", "Path to tls cert and keys")
 	flag.StringVar(&cfg.dsn, "dsn", "web:super-secret-passwd@/snippetbox?parseTime=true", "MySQL data source name")
 	flag.Parse()
 
@@ -74,7 +74,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:         ":" + cfg.addr,
-		Handler:      app.route(cfg),
+		Handler:      app.route(),
 		ErrorLog:     slog.NewLogLogger(logger.Handler(), slog.LevelError),
 		TLSConfig:    tlsConfig,
 		IdleTimeout:  time.Minute,
@@ -82,7 +82,7 @@ func main() {
 		WriteTimeout: 10 * time.Second,
 	}
 
-	if err := srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem"); err != nil {
+	if err := srv.ListenAndServeTLS(cfg.tlsPath+"/cert.pem", cfg.tlsPath+"/key.pem"); err != nil {
 		app.logger.Error(err.Error())
 		os.Exit(-1)
 	}
